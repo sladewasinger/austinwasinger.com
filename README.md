@@ -1,2 +1,0 @@
-# austinwasinger.com
-My website
