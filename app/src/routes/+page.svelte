@@ -2,6 +2,7 @@
 	import * as PIXI from 'pixi.js';
 	import * as Matter from 'matter-js';
 	import { onMount } from 'svelte';
+	import { Particle, Vector } from './Particle';
 
 	let app: PIXI.Application;
 	console.log('here');
@@ -13,31 +14,89 @@
 			width: 800,
 			height: 600,
 			view: canvas,
-			backgroundColor: 0x000000
+			backgroundAlpha: 0
 		});
-
-		// Add the canvas element to the DOM
-		console.log('aded');
 
 		// Create a new Pixi.js graphics object
 		const graphics = new PIXI.Graphics();
-		// Set the line style for the chain
-		graphics.lineStyle(5, 0xff0000);
-
-		// Move the graphics object to the starting position of the chain
-		graphics.moveTo(100, 100);
-
-		// Draw the chain links
-		graphics.lineTo(150, 150);
-		graphics.lineTo(200, 100);
-		graphics.lineTo(250, 150);
-		graphics.lineTo(300, 100);
-		graphics.lineTo(350, 150);
-
 		// Add the graphics object to the stage
 		app.stage.addChild(graphics);
 
-		// resize the canvas to fill browser window dynamically
+		// on mouse move create particles
+		const particles: Particle[] = [];
+		const mousePos: Vector = new Vector(0, 0);
+		const lastMousePos = new Vector(0, 0);
+		function mouseMove(event: MouseEvent) {
+			// get mouse pos on canvas
+			const rect = canvas.getBoundingClientRect();
+			const x = event.clientX - rect.left;
+			const y = event.clientY - rect.top;
+
+			lastMousePos.x = mousePos.x;
+			lastMousePos.y = mousePos.y;
+
+			mousePos.x = x;
+			mousePos.y = y;
+		}
+		window.addEventListener('mousemove', mouseMove);
+
+		function createParticlesAlongMouseLine() {
+			const distance = Vector.distance(mousePos, lastMousePos);
+			const numParticles = Math.floor(distance / 10);
+			for (let i = 0; i < numParticles; i++) {
+				const t = i / numParticles;
+				const x = lastMousePos.x + (mousePos.x - lastMousePos.x) * t;
+				const y = lastMousePos.y + (mousePos.y - lastMousePos.y) * t;
+				createParticle(x, y);
+			}
+		}
+
+		function createParticle(x: number, y: number) {
+			// create a particle
+			const randomNum = (min: number, max: number) => Math.random() * (max - min) + min;
+			const particle = new Particle(
+				x,
+				y,
+				5,
+				0x00ffb8,
+				new Vector(randomNum(-1, 1), randomNum(-1, 1))
+			);
+			particles.push(particle);
+
+			// fade particle out after some time
+			setTimeout(() => {
+				const invterval = setInterval(() => {
+					particle.alpha -= 0.1;
+					if (particle.alpha <= 0) {
+						clearInterval(invterval);
+						particles.splice(particles.indexOf(particle), 1);
+					}
+				}, 50);
+			}, 500);
+		}
+
+		let lastTime = Date.now();
+		function loop() {
+			const now = Date.now();
+			const deltaTime = now - lastTime;
+			lastTime = now;
+
+			if (deltaTime > 1000 / (60 * 4)) {
+				createParticle(mousePos.x, mousePos.y);
+			}
+
+			if (Vector.distance(mousePos, lastMousePos) > 10) {
+				createParticlesAlongMouseLine();
+			}
+
+			graphics.clear();
+			for (const particle of particles) {
+				particle.update();
+				particle.draw(graphics);
+			}
+		}
+
+		setInterval(loop, 1000 / 60);
 
 		// resize function to fill the browser window
 		function resize() {
@@ -71,6 +130,7 @@
 		top: 0;
 		left: 0;
 		z-index: -1;
+		pointer-events: none;
 	}
 
 	:global(body) {
