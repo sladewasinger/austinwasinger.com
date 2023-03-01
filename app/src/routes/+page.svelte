@@ -54,13 +54,10 @@
 		function createParticle(x: number, y: number) {
 			// create a particle
 			const randomNum = (min: number, max: number) => Math.random() * (max - min) + min;
-			const particle = new Particle(
-				x,
-				y,
-				5,
-				0x00ffb8,
-				new Vector(randomNum(-1, 1), randomNum(-1, 1))
-			);
+			const particle = new Particle(x, y, randomNum(1, 5), 0x00ffb8);
+			particle.applyForce(new Vector(randomNum(-2, 2), randomNum(-2, 2)));
+			//particle.airFriction = 0.95 + 0.05 * (5 / particle.radius) * 0.25;
+			particle.airFriction = randomNum(0.96, 0.98);
 			particles.push(particle);
 
 			// fade particle out after some time
