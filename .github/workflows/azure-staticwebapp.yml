@@ -1,36 +1,54 @@
+name: Build and deploy to Azure Static Web Apps
+
 on:
   push:
-    branches: [ "main" ]
-    
-pool:
-  vmImage: 'ubuntu-latest'
+    branches:
+      - main
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.15.0'
-  displayName: 'Install Node.js'
+env:
+  AZURE_STATIC_WEB_APPS_API_LOCATION: ''
 
-- script: |
-    npm install
-    npm run build:prod
-  displayName: 'npm install and build'
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-- task: AzureStaticWebApp@0
-  inputs:
-    app_location: '/app'
-    api_location: ''
-    output_location: '$(System.DefaultWorkingDirectory)/dist'
-    app_artifact_location: '$(System.DefaultWorkingDirectory)/dist'
-    sku: 'Free'
-    # Specify the name of the Azure Static Website you created
-    name: 'austinwasinger'
-    # Specify the resource group that the Azure Static Website belongs to
-    resourceGroupName: 'global_resource_group'
-    # Specify the deployment token for the Azure Static Website
-    # You can create a deployment token by following the instructions in the Azure portal:
-    # https://docs.microsoft.com/en-us/azure/static-web-apps/authentication-authorization?tabs=cli#cli
-    # Make sure to store the token securely as a secret variable in your build pipeline
-    # and reference it using the $(deploymentToken) syntax
-    accessToken: '$(DEPLOYMENT_TOKEN)'
-  displayName: 'Deploy to Azure Static Web App'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - name: Install packages
+        run: npm install
+
+      - name: Build app
+        run: npm run build -- --prod
+
+      - name: Deploy to Azure Static Web Apps
+        uses: azure/static-web-apps-deploy@v1
+        with:
+          # Replace with the name of the Azure Static Web App you created
+          app-name: <name-of-static-web-app>
+          # Replace with the name of the GitHub repository that contains your app
+          github-repo: <github-username>/<github-repo-name>
+          # Replace with the name of the branch you want to deploy
+          # This should be the same branch specified in the `on` section at the top
+          # of this YAML file
+          branch: main
+          # Replace with the path to the build output directory relative to the root of your repo
+          # This should be the same directory that you specified as the output location
+          # in the `angular.json` file when you ran the `ng build` command
+          app-artifact-location: dist
+          # Replace with the name of the Azure Static Web Apps resource group
+          resource-group: <name-of-resource-group>
+          # Replace with the Azure region where you want to deploy your app
+          region: <azure-region>
+          # Replace with the deployment token for your Azure Static Web App
+          # You can create a deployment token by following the instructions in the Azure portal:
+          # https://docs.microsoft.com/en-us/azure/static-web-apps/authentication-authorization?tabs=cli#cli
+          # Make sure to store the token securely as a secret in your GitHub repository
+          # and reference it using the ${{ secrets.DEPLOYMENT_TOKEN }} syntax
+          token: ${{ secrets.DEPLOYMENT_TOKEN }}
