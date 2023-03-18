@@ -13,27 +13,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      # - name: Checkout code
+      #   uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14.x'
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '14.x'
 
-      - name: Install packages
-        run: npm install
+      # - name: Install packages
+      #   run: npm install
 
-      - name: Build app
-        run: npm run build -- --prod
+      # - name: Build app
+      #   run: npm run build -- --prod
 
       - name: Deploy to Azure Static Web Apps
         uses: azure/static-web-apps-deploy@v1
         with:
           # Replace with the name of the Azure Static Web App you created
-          app-name: <name-of-static-web-app>
+          app-name: austinwasinger
           # Replace with the name of the GitHub repository that contains your app
-          github-repo: <github-username>/<github-repo-name>
+          github-repo: sladewasinger/austinwasingerdotcom
           # Replace with the name of the branch you want to deploy
           # This should be the same branch specified in the `on` section at the top
           # of this YAML file
@@ -43,9 +43,9 @@ jobs:
           # in the `angular.json` file when you ran the `ng build` command
           app-artifact-location: dist
           # Replace with the name of the Azure Static Web Apps resource group
-          resource-group: <name-of-resource-group>
+          resource-group: global_resource_group
           # Replace with the Azure region where you want to deploy your app
-          region: <azure-region>
+          region: Central US
           # Replace with the deployment token for your Azure Static Web App
           # You can create a deployment token by following the instructions in the Azure portal:
           # https://docs.microsoft.com/en-us/azure/static-web-apps/authentication-authorization?tabs=cli#cli
