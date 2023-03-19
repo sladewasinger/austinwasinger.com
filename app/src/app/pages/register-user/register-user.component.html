@@ -1,1 +1,45 @@
-<p>register-user works!</p>
+<div class="container bg-dark text-light">
+  <h2 class="my-4 pt-sm-4">Register User</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" row>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="username" class="form-label">Username:</label>
+          <input type="text" class="form-control" id="username" formControlName="username" required>
+          <div *ngIf="registerForm.get('username')?.invalid" class="invalid-feedback">Please enter a username.</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="email" class="form-label">Email:</label>
+          <input type="email" class="form-control" id="email" formControlName="email" required>
+          <div *ngIf="registerForm.get('email')?.invalid" class="invalid-feedback">Please enter a valid email address.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row pt-sm-4">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="password" class="form-label">Password:</label>
+          <input type="password" class="form-control" id="password" formControlName="password" required>
+          <div *ngIf="registerForm.get('password')?.invalid" class="invalid-feedback">Please enter a password.</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">Confirm Password:</label>
+          <input type="password" class="form-control" id="confirmPassword" formControlName="confirmPassword" required>
+          <div *ngIf="registerForm.get('confirmPassword')?.invalid" class="invalid-feedback">Please confirm your
+            password.</div>
+          <div
+            *ngIf="registerForm.get('confirmPassword')?.valid && registerForm.get('confirmPassword')?.value !== registerForm.get('password')?.value"
+            class="invalid-feedback">Passwords do not match.</div>
+        </div>
+      </div>
+    </div>
+    <div class="pt-sm-4 pb-sm-4">
+      <button type="submit" class="btn btn-primary">Register</button>
+    </div>
+  </form>
+</div>

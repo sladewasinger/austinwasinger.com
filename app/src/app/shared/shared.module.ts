@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from '../material/material.module';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -9,10 +9,10 @@ import { ToolbarComponent } from './components/toolbar/toolbar.component';
   ],
   imports: [
     CommonModule,
-    MaterialModule
   ],
   exports: [
-    ToolbarComponent
+    ToolbarComponent,
+    ReactiveFormsModule
   ]
 })
 export class SharedModule { }
